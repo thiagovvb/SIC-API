@@ -15,11 +15,11 @@ class InfoRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = InfoRequest
         fields = [
-            "demander_id",
+            "demander",
             "content",
             "answer",
             "open_date",
             "answer_date",
             "status",
-            "appeal_id"
+            "appeal"
         ]
