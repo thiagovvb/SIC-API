@@ -6,7 +6,6 @@ from rest_framework import permissions
 from yaml import serialize
 from .models import InfoRequest,InfoAppeal
 from .serializers import InfoAppealSerializer,InfoRequestSerializer
-from django.utils.datastructures import MultiValueDictKeyError
 
 class ListInfoRequestApiView(APIView):
 
@@ -71,4 +70,31 @@ class InfoRequestApiView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK) 
 
         
+class InfoAppealApiView(APIView):
 
+    permission_classes = [permissions.IsAuthenticated]
+
+    #Função que retorna um recurso de pedido de informação, caso ele exista
+    def get(self, request, *args, **kwargs):
+
+        if(not request.query_params.get('id')):
+            return Response(status=status.HTTP_400_BAD_REQUEST) 
+
+        # if(request.query_params.get('id')):
+        info_appeal = InfoRequest.objects.get(pk = request.query_params.get('id')).appeal
+        if(info_appeal):
+            serializer = InfoAppealSerializer(info_appeal)
+            return Response(serializer.data, status = status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    #Função que abre uma novo pedido de informação
+    def post(self, request, *args, **kwargs):
+
+        if(not request.data.get('id') or not request.data.get('content')):
+            return Response(status=status.HTTP_400_BAD_REQUEST) 
+        info_request = InfoRequest.objects.get(pk = request.data.get('id'))
+
+        appeal = info_request.open_appeal(request.data.get('content'))
+        serializer = InfoAppealSerializer(appeal)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

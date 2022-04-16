@@ -70,6 +70,7 @@ class InfoRequest(models.Model):
 
         appeal.save()
         self.save()
+        return appeal
         
 
     #Método que registra uma resposta para um recurso e registra a demanda como finalizada
